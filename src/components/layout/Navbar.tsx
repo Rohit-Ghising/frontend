@@ -65,7 +65,7 @@ export default function Navbar() {
                 <Zap size={16} className="text-white" />
               </div>
               <span className="font-display font-bold text-white text-lg tracking-tight">
-                Gadget<span className="text-brand-400">Zone</span>
+                Tech<span className="text-brand-400">Cart</span>
               </span>
             </Link>
 

@@ -4,18 +4,19 @@ import { ArrowRight, Zap, Shield, Truck, Headphones, TrendingUp, ChevronRight } 
 import { useAppDispatch, useAppSelector } from '../hooks/useAppStore';
 import { setCategory } from '../store/productsSlice';
 import ProductCard from '../components/product/ProductCard';
-import { CATEGORIES } from '../data/products';
+import type { Category } from '../types';
+import { CATEGORY_META } from '../constants/categoryMeta';
 
 export default function HomePage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { items: products } = useAppSelector(s => s.products);
+  const { items: products } = useAppSelector((s) => s.products);
 
   const featured = products.filter(p => p.featured);
   const trending = products.filter(p => p.trending);
 
-  const handleCategory = (cat: string) => {
-    dispatch(setCategory(cat as any));
+  const handleCategory = (cat: Category) => {
+    dispatch(setCategory(cat));
     navigate('/products');
   };
 
@@ -148,17 +149,19 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-            {CATEGORIES.map(({ id, label, icon, count }) => (
+            {(Object.keys(CATEGORY_META) as Category[]).map((id) => (
               <button
                 key={id}
                 onClick={() => handleCategory(id)}
                 className="group card p-5 text-center hover:border-brand-500/50 hover:bg-brand-500/5 transition-all duration-300 hover:-translate-y-1"
               >
-                <div className="text-3xl mb-3">{icon}</div>
+                <div className="text-3xl mb-3">{CATEGORY_META[id].icon}</div>
                 <p className="font-display font-semibold text-white text-sm group-hover:text-brand-400 transition-colors">
-                  {label}
+                  {CATEGORY_META[id].label}
                 </p>
-                <p className="text-xs text-zinc-600 mt-1">{count} items</p>
+                <p className="text-xs text-zinc-600 mt-1">
+                  {products.filter((p) => p.category === id).length} items
+                </p>
               </button>
             ))}
           </div>

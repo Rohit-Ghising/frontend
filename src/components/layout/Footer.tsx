@@ -11,9 +11,9 @@ export default function Footer() {
               <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center">
                 <Zap size={16} className="text-white" />
               </div>
-              <span className="font-display font-bold text-white text-lg">
-                Gadget<span className="text-brand-400">Zone</span>
-              </span>
+            <span className="font-display font-bold text-white text-lg">
+              Tech<span className="text-brand-400">Cart</span>
+            </span>
             </Link>
             <p className="text-sm text-zinc-500 leading-relaxed">
               Your destination for the latest and greatest in technology. Premium gadgets, unbeatable prices.
@@ -73,7 +73,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-surface-border mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-zinc-600">Â© 2025 GadgetZone. All rights reserved.</p>
+          <p className="text-xs text-zinc-600">© 2025 TechCart. All rights reserved.</p>
           <p className="text-xs text-zinc-600 font-mono">v1.0.0</p>
         </div>
       </div>

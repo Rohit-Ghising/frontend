@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ShoppingCart, ArrowLeft, Star, Truck, Shield, RotateCcw, Package, ChevronRight, ThumbsUp } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Truck, Shield, RotateCcw, Package, ChevronRight } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../hooks/useAppStore';
-import { addToCart } from '../store/cartSlice';
-import { openCart } from '../store/cartSlice';
+import { addToCart, openCart } from '../store/cartSlice';
 import ProductCard from '../components/product/ProductCard';
 import StarRating from '../components/ui/StarRating';
 import { ProductDetailSkeleton } from '../components/ui/Skeleton';
-import { reviews as mockReviews } from '../data/products';
 import { toast } from 'sonner';
 
 export default function ProductDetailPage() {
@@ -42,14 +40,21 @@ export default function ProductDetailPage() {
     </div>
   );
 
-  const related = products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
-  const productReviews = mockReviews.filter(r => r.productId === product.id);
+  const related = products.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
   const inCart = cartItems.find(i => i.product.id === product.id);
 
-  const handleAddToCart = () => {
-    for (let i = 0; i < qty; i++) dispatch(addToCart(product));
-    dispatch(openCart());
-    toast.success(`${product.name} added to cart`);
+  const handleAddToCart = async () => {
+    const resultAction = await dispatch(
+      addToCart({ productId: Number(product.id), quantity: qty, product }),
+    );
+    if (addToCart.fulfilled.match(resultAction)) {
+      dispatch(openCart());
+      toast.success(`${product.name} added to cart`, {
+        description: `$${product.price.toLocaleString()}`,
+      });
+    } else {
+      toast.error(resultAction.payload?.error || 'Could not add to cart');
+    }
   };
 
   const discount = product.originalPrice
@@ -193,44 +198,14 @@ export default function ProductDetailPage() {
               <p className="text-zinc-400 leading-relaxed">{product.description}</p>
             </div>
 
-            {/* Reviews */}
             <div className="card p-6">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-4">
                 <h2 className="font-display font-semibold text-white text-xl">Reviews</h2>
-                <div className="flex items-center gap-2">
-                  <Star size={16} className="fill-amber-400 text-amber-400" />
-                  <span className="font-bold text-white">{product.rating}</span>
-                  <span className="text-zinc-500 text-sm">({product.reviewCount.toLocaleString()})</span>
-                </div>
+                <span className="text-xs text-zinc-500 uppercase tracking-wider">Coming soon</span>
               </div>
-
-              {productReviews.length > 0 ? (
-                <div className="space-y-5">
-                  {productReviews.map(review => (
-                    <div key={review.id} className="pb-5 border-b border-surface-border last:border-0 last:pb-0">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-full bg-brand-500/20 border border-brand-500/30 flex items-center justify-center">
-                            <span className="text-xs font-bold text-brand-400">{review.userName[0]}</span>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-white">{review.userName}</p>
-                            <p className="text-xs text-zinc-600">{new Date(review.createdAt).toLocaleDateString()}</p>
-                          </div>
-                        </div>
-                        <StarRating rating={review.rating} size={12} />
-                      </div>
-                      <h4 className="text-sm font-medium text-white mb-1">{review.title}</h4>
-                      <p className="text-sm text-zinc-400">{review.comment}</p>
-                      <button className="flex items-center gap-1.5 text-xs text-zinc-600 hover:text-zinc-400 mt-2 transition-colors">
-                        <ThumbsUp size={11} /> Helpful ({review.helpful})
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-zinc-500 text-sm">No reviews yet. Be the first to review!</p>
-              )}
+              <p className="text-zinc-400 text-sm leading-relaxed">
+                Honest customer feedback and ratings will appear here shortly. Check back soon to read firsthand experiences with this product.
+              </p>
             </div>
           </div>
 

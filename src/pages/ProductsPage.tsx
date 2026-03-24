@@ -7,7 +7,7 @@ import { Category, SortOption } from '../types';
 import ProductCard from '../components/product/ProductCard';
 import { ProductCardSkeleton } from '../components/ui/Skeleton';
 import Pagination from '../components/ui/Pagination';
-import { BRANDS, CATEGORIES } from '../data/products';
+import { CATEGORY_META } from '../constants/categoryMeta';
 
 const ITEMS_PER_PAGE = 8;
 
@@ -22,10 +22,18 @@ const sortOptions: { value: SortOption; label: string }[] = [
 export default function ProductsPage() {
   const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
-  const { filtered, filters } = useAppSelector(s => s.products);
+  const { items: products, filtered, filters } = useAppSelector((s) => s.products);
   const [loading, setLoading] = useState(true);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 3000]);
+
+  const brandList = Array.from(new Set(products.map((p) => p.brand))).sort();
+  const categoryStats = (Object.keys(CATEGORY_META) as Category[]).map((id) => ({
+    id,
+    label: CATEGORY_META[id].label,
+    icon: CATEGORY_META[id].icon,
+    count: products.filter((p) => p.category === id).length,
+  }));
 
   useEffect(() => {
     const cat = searchParams.get('category') as Category | null;
@@ -108,12 +116,12 @@ export default function ProductsPage() {
                   }`}
                 >
                   <span>All Products</span>
-                  <span className="text-xs">{useAppSelector(s => s.products.items.length)}</span>
+                  <span className="text-xs">{products.length}</span>
                 </button>
-                {CATEGORIES.map(({ id, label, count }) => (
+                {categoryStats.map(({ id, label, count }) => (
                   <button
                     key={id}
-                    onClick={() => dispatch(setCategory(id as Category))}
+                    onClick={() => dispatch(setCategory(id))}
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${
                       filters.category === id
                         ? 'bg-brand-500/10 text-brand-400 border border-brand-500/20'
@@ -154,7 +162,7 @@ export default function ProductsPage() {
             <div>
               <label className="text-xs text-zinc-500 font-medium uppercase tracking-wider mb-3 block">Brand</label>
               <div className="space-y-2">
-                {BRANDS.map(brand => (
+                {brandList.map((brand) => (
                   <label key={brand} className="flex items-center gap-2.5 cursor-pointer group">
                     <input
                       type="checkbox"
@@ -206,7 +214,7 @@ export default function ProductsPage() {
               <div className="flex flex-wrap gap-2 mb-6">
                 {filters.category !== 'all' && (
                   <span className="badge bg-brand-500/10 text-brand-400 border border-brand-500/20 flex items-center gap-1">
-                    {CATEGORIES.find(c => c.id === filters.category)?.label}
+                    {CATEGORY_META[filters.category]?.label ?? filters.category}
                     <button onClick={() => dispatch(setCategory('all'))}><X size={10} /></button>
                   </span>
                 )}
@@ -277,9 +285,12 @@ export default function ProductsPage() {
               >
                 All Products
               </button>
-              {CATEGORIES.map(({ id, label }) => (
-                <button key={id} onClick={() => { dispatch(setCategory(id as Category)); setFiltersOpen(false); }}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${filters.category === id ? 'bg-brand-500/10 text-brand-400' : 'text-zinc-400 hover:text-white hover:bg-surface-hover'}`}>
+              {categoryStats.map(({ id, label }) => (
+                <button
+                  key={id}
+                  onClick={() => { dispatch(setCategory(id)); setFiltersOpen(false); }}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${filters.category === id ? 'bg-brand-500/10 text-brand-400' : 'text-zinc-400 hover:text-white hover:bg-surface-hover'}`}
+                >
                   {label}
                 </button>
               ))}
@@ -287,7 +298,7 @@ export default function ProductsPage() {
             {/* Brands */}
             <div>
               <p className="text-xs text-zinc-500 font-medium uppercase tracking-wider mb-3">Brand</p>
-              {BRANDS.map(brand => (
+              {brandList.map((brand) => (
                 <label key={brand} className="flex items-center gap-2.5 cursor-pointer py-1.5">
                   <input type="checkbox" checked={filters.brands.includes(brand)} onChange={() => handleBrandToggle(brand)} className="accent-brand-500" />
                   <span className="text-sm text-zinc-400">{brand}</span>

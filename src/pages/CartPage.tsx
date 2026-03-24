@@ -1,16 +1,16 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Trash2, Plus, Minus, ShoppingCart, ArrowRight, Tag } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../hooks/useAppStore';
-import { removeFromCart, updateQuantity, clearCart } from '../store/cartSlice';
+import { removeCartItem, updateCartItem, clearCart } from '../store/cartSlice';
 import { toast } from 'sonner';
 
 export default function CartPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { items } = useAppSelector(s => s.cart);
+  const { items, totalItems, totalPrice } = useAppSelector((s) => s.cart);
   const { isAuthenticated } = useAppSelector(s => s.auth);
 
-  const subtotal = items.reduce((acc, i) => acc + i.product.price * i.quantity, 0);
+  const subtotal = totalPrice;
   const shipping = subtotal > 99 ? 0 : 9.99;
   const tax = subtotal * 0.08;
   const total = subtotal + shipping + tax;
@@ -46,7 +46,7 @@ export default function CartPage() {
         <div className="py-8">
           <h1 className="font-display font-bold text-4xl text-white">
             Shopping Cart
-            <span className="text-zinc-600 text-2xl ml-3">({items.reduce((a, i) => a + i.quantity, 0)})</span>
+            <span className="text-zinc-600 text-2xl ml-3">({totalItems})</span>
           </h1>
         </div>
 
@@ -55,14 +55,19 @@ export default function CartPage() {
           <div className="lg:col-span-2 space-y-4">
             <div className="flex justify-end">
               <button
-                onClick={() => { dispatch(clearCart()); toast.success('Cart cleared'); }}
+                onClick={async () => {
+                  const result = await dispatch(clearCart());
+                  if (clearCart.fulfilled.match(result)) {
+                    toast.success('Cart cleared');
+                  }
+                }}
                 className="text-sm text-zinc-500 hover:text-red-400 transition-colors flex items-center gap-1.5"
               >
                 <Trash2 size={13} /> Clear Cart
               </button>
             </div>
 
-            {items.map(({ product, quantity }) => (
+            {items.map(({ id, product, quantity }) => (
               <div key={product.id} className="card p-4 flex gap-4">
                 <Link to={`/products/${product.id}`}>
                   <img
@@ -85,7 +90,12 @@ export default function CartPage() {
                       <p className="text-xs text-zinc-600 mt-0.5">{product.shortDescription}</p>
                     </div>
                     <button
-                      onClick={() => { dispatch(removeFromCart(product.id)); toast.success('Removed from cart'); }}
+                      onClick={async () => {
+                        const result = await dispatch(removeCartItem(id));
+                        if (removeCartItem.fulfilled.match(result)) {
+                          toast.success('Removed from cart');
+                        }
+                      }}
                       className="p-1.5 rounded-lg text-zinc-600 hover:text-red-400 hover:bg-red-500/10 transition-all flex-shrink-0"
                     >
                       <Trash2 size={14} />
@@ -95,14 +105,18 @@ export default function CartPage() {
                   <div className="flex items-center justify-between mt-3">
                     <div className="flex items-center border border-surface-border rounded-xl overflow-hidden">
                       <button
-                        onClick={() => dispatch(updateQuantity({ id: product.id, quantity: quantity - 1 }))}
+                        onClick={() => {
+                          if (quantity > 1) {
+                            dispatch(updateCartItem({ id, quantity: quantity - 1 }));
+                          }
+                        }}
                         className="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-surface-hover transition-all"
                       >
                         <Minus size={12} />
                       </button>
                       <span className="w-10 text-center text-sm font-mono text-white">{quantity}</span>
                       <button
-                        onClick={() => dispatch(updateQuantity({ id: product.id, quantity: quantity + 1 }))}
+                        onClick={() => dispatch(updateCartItem({ id, quantity: quantity + 1 }))}
                         className="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-surface-hover transition-all"
                       >
                         <Plus size={12} />
@@ -140,7 +154,7 @@ export default function CartPage() {
 
               <div className="space-y-2.5 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-zinc-400">Subtotal ({items.reduce((a, i) => a + i.quantity, 0)} items)</span>
+                  <span className="text-zinc-400">Subtotal ({totalItems} items)</span>
                   <span className="text-white">${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">

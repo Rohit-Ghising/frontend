@@ -1,15 +1,14 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { X, ShoppingCart, Trash2, Plus, Minus, ArrowRight } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppStore';
-import { closeCart, removeFromCart, updateQuantity } from '../../store/cartSlice';
+import { closeCart, removeCartItem, updateCartItem } from '../../store/cartSlice';
 
 export default function CartDrawer() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { items, isOpen } = useAppSelector(s => s.cart);
-
-  const total = items.reduce((acc, i) => acc + i.product.price * i.quantity, 0);
-  const count = items.reduce((acc, i) => acc + i.quantity, 0);
+  const { items, isOpen, totalItems, totalPrice } = useAppSelector((s) => s.cart);
+  const count = totalItems;
+  const total = totalPrice;
 
   const handleCheckout = () => {
     dispatch(closeCart());
@@ -63,49 +62,61 @@ export default function CartDrawer() {
               </Link>
             </div>
           ) : (
-            items.map(({ product, quantity }) => (
-              <div key={product.id} className="flex gap-3 p-3 rounded-xl bg-surface-hover border border-surface-border">
-                <img
-                  src={product.images[0]}
-                  alt={product.name}
-                  className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
-                />
-                <div className="flex-1 min-w-0">
-                  <Link
-                    to={`/products/${product.id}`}
-                    onClick={() => dispatch(closeCart())}
-                    className="text-sm font-medium text-white hover:text-brand-400 transition-colors line-clamp-1"
-                  >
-                    {product.name}
-                  </Link>
-                  <p className="text-xs text-zinc-500 mt-0.5">{product.brand}</p>
-                  <div className="flex items-center justify-between mt-2">
-                    <span className="text-sm font-bold text-brand-400">${(product.price * quantity).toLocaleString()}</span>
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => dispatch(updateQuantity({ id: product.id, quantity: quantity - 1 }))}
-                        className="w-6 h-6 rounded-md bg-surface-card border border-surface-border flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
-                      >
-                        <Minus size={11} />
-                      </button>
-                      <span className="w-6 text-center text-sm font-mono text-white">{quantity}</span>
-                      <button
-                        onClick={() => dispatch(updateQuantity({ id: product.id, quantity: quantity + 1 }))}
-                        className="w-6 h-6 rounded-md bg-surface-card border border-surface-border flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
-                      >
-                        <Plus size={11} />
-                      </button>
-                      <button
-                        onClick={() => dispatch(removeFromCart(product.id))}
-                        className="w-6 h-6 rounded-md flex items-center justify-center text-zinc-600 hover:text-red-400 transition-colors ml-1"
-                      >
-                        <Trash2 size={11} />
-                      </button>
+            items.map((item) => {
+              const { product, quantity } = item;
+              return (
+                <div key={product.id} className="flex gap-3 p-3 rounded-xl bg-surface-hover border border-surface-border">
+                  <img
+                    src={product.images[0]}
+                    alt={product.name}
+                    className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <Link
+                      to={`/products/${product.id}`}
+                      onClick={() => dispatch(closeCart())}
+                      className="text-sm font-medium text-white hover:text-brand-400 transition-colors line-clamp-1"
+                    >
+                      {product.name}
+                    </Link>
+                    <p className="text-xs text-zinc-500 mt-0.5">{product.brand}</p>
+                    <div className="flex items-center justify-between mt-2">
+                      <span className="text-sm font-bold text-brand-400">${(product.price * quantity).toLocaleString()}</span>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => {
+                            if (quantity > 1) {
+                              dispatch(updateCartItem({ id: item.id, quantity: quantity - 1 }));
+                            }
+                          }}
+                          className="w-6 h-6 rounded-md bg-surface-card border border-surface-border flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
+                        >
+                          <Minus size={11} />
+                        </button>
+                        <span className="w-6 text-center text-sm font-mono text-white">{quantity}</span>
+                        <button
+                          onClick={() => dispatch(updateCartItem({ id: item.id, quantity: quantity + 1 }))}
+                          className="w-6 h-6 rounded-md bg-surface-card border border-surface-border flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
+                        >
+                          <Plus size={11} />
+                        </button>
+                        <button
+                          onClick={async () => {
+                            const result = await dispatch(removeCartItem(item.id));
+                            if (removeCartItem.fulfilled.match(result)) {
+                              // optional feedback could go here
+                            }
+                          }}
+                          className="w-6 h-6 rounded-md flex items-center justify-center text-zinc-600 hover:text-red-400 transition-colors ml-1"
+                        >
+                          <Trash2 size={11} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
 

@@ -19,11 +19,22 @@ export interface Product {
   createdAt: string;
 }
 
-export type Category = 'phones' | 'laptops' | 'headphones' | 'smartwatches' | 'accessories';
+export type Category =
+  | 'phones'
+  | 'laptops'
+  | 'headphones'
+  | 'smartwatches'
+  | 'accessories'
+  | 'fashion'
+  | 'books'
+  | 'home'
+  | 'toys';
 
 export interface CartItem {
+  id: number;
   product: Product;
   quantity: number;
+  totalPrice: number;
 }
 
 export interface User {
@@ -36,18 +47,16 @@ export interface User {
 }
 
 export interface Order {
-  id: string;
-  userId: string;
+  id: number;
+  cartId?: number;
   items: CartItem[];
-  total: number;
+  totalPrice: number;
   status: OrderStatus;
-  shippingAddress: Address;
-  paymentMethod: string;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
 }
 
-export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'completed';
 
 export interface Address {
   fullName: string;
@@ -85,14 +94,20 @@ export type SortOption = 'newest' | 'price-asc' | 'price-desc' | 'rating' | 'pop
 
 export interface AuthState {
   user: User | null;
-  isAuthenticated: boolean;
+  token: string | null;
   loading: boolean;
   error: string | null;
+  isAuthenticated: boolean;
 }
 
 export interface CartState {
+  id?: number;
   items: CartItem[];
+  totalItems: number;
+  totalPrice: number;
   isOpen: boolean;
+  loading: boolean;
+  error: string | null;
 }
 
 export interface Notification {

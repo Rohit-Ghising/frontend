@@ -13,13 +13,19 @@ interface Props {
 export default function ProductCard({ product, compact = false }: Props) {
   const dispatch = useAppDispatch();
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    dispatch(addToCart(product));
-    toast.success(`${product.name} added to cart`, {
-      description: `$${product.price.toLocaleString()}`,
-    });
+    const result = await dispatch(
+      addToCart({ productId: Number(product.id), quantity: 1, product }),
+    );
+    if (addToCart.fulfilled.match(result)) {
+      toast.success(`${product.name} added to cart`, {
+        description: `$${product.price.toLocaleString()}`,
+      });
+    } else {
+      toast.error(result.payload?.error || 'Could not add to cart');
+    }
   };
 
   const discount = product.originalPrice

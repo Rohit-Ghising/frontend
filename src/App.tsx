@@ -1,34 +1,52 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Toaster } from 'sonner';
-import MainLayout from './layouts/MainLayout';
-import AdminLayout from './layouts/AdminLayout';
-import HomePage from './pages/HomePage';
-import ProductsPage from './pages/ProductsPage';
-import ProductDetailPage from './pages/ProductDetailPage';
-import CartPage from './pages/CartPage';
-import CheckoutPage from './pages/CheckoutPage';
-import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage';
-import OrdersPage from './pages/OrdersPage';
-import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminProducts from './pages/admin/AdminProducts';
-import AdminOrders from './pages/admin/AdminOrders';
-import AdminUsers from './pages/admin/AdminUsers';
-import AdminLogin from './pages/admin/AdminLogin';
-import ProtectedRoute from './components/ui/ProtectedRoute';
-import AdminRoute from './components/ui/AdminRoute';
+import { useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "sonner";
+import MainLayout from "./layouts/MainLayout";
+import AdminLayout from "./layouts/AdminLayout";
+import HomePage from "./pages/HomePage";
+import ProductsPage from "./pages/ProductsPage";
+import ProductDetailPage from "./pages/ProductDetailPage";
+import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import OrdersPage from "./pages/OrdersPage";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminProducts from "./pages/admin/AdminProducts";
+import AdminOrders from "./pages/admin/AdminOrders";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminRoute from "./components/ui/AdminRoute";
+import ProtectedRoute from "./components/ui/ProtectedRoute";
+import { useAppDispatch, useAppSelector } from "./hooks/useAppStore";
+import { fetchProducts } from "./store/productsSlice";
+import { fetchProfile } from "./store/authSlice";
+// import AdminRoute from './components/ui/AdminRoute';
 
 export default function App() {
+  const dispatch = useAppDispatch();
+  const { token, user } = useAppSelector((s) => s.auth);
+
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (token && !user) {
+      dispatch(fetchProfile());
+    }
+  }, [dispatch, token, user]);
+
   return (
     <BrowserRouter>
       <Toaster
         position="top-right"
         toastOptions={{
           style: {
-            background: '#18181b',
-            border: '1px solid #27272a',
-            color: '#fafafa',
-            fontFamily: 'DM Sans, sans-serif',
+            background: "#18181b",
+            border: "1px solid #27272a",
+            color: "#fafafa",
+            fontFamily: "DM Sans, sans-serif",
           },
         }}
       />
@@ -39,7 +57,14 @@ export default function App() {
 
         {/* Admin routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminLayout />
+            </AdminRoute>
+          }
+        >
           <Route index element={<AdminDashboard />} />
           <Route path="products" element={<AdminProducts />} />
           <Route path="orders" element={<AdminOrders />} />
@@ -52,8 +77,22 @@ export default function App() {
           <Route path="products" element={<ProductsPage />} />
           <Route path="products/:id" element={<ProductDetailPage />} />
           <Route path="cart" element={<CartPage />} />
-          <Route path="checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
-          <Route path="orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
+          <Route
+            path="checkout"
+            element={
+              <ProtectedRoute>
+                <CheckoutPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="orders"
+            element={
+              <ProtectedRoute>
+                <OrdersPage />
+              </ProtectedRoute>
+            }
+          />
         </Route>
       </Routes>
     </BrowserRouter>

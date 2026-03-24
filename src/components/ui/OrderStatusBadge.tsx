@@ -6,6 +6,7 @@ const statusConfig: Record<OrderStatus, { label: string; color: string; icon: Re
   processing: { label: 'Processing', color: 'bg-blue-500/10 text-blue-400 border-blue-500/20',        icon: Package },
   shipped:    { label: 'Shipped',    color: 'bg-purple-500/10 text-purple-400 border-purple-500/20',  icon: Truck },
   delivered:  { label: 'Delivered',  color: 'bg-green-500/10 text-green-400 border-green-500/20',     icon: CheckCircle },
+  completed:  { label: 'Completed',  color: 'bg-green-500/10 text-green-400 border-green-500/20',     icon: CheckCircle },
   cancelled:  { label: 'Cancelled',  color: 'bg-red-500/10 text-red-400 border-red-500/20',           icon: XCircle },
 };
 

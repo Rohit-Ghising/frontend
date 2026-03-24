@@ -4,10 +4,8 @@ import { useAppSelector } from '../hooks/useAppStore';
 import OrderStatusBadge from '../components/ui/OrderStatusBadge';
 
 export default function OrdersPage() {
-  const { items: orders } = useAppSelector(s => s.orders);
-  const { user } = useAppSelector(s => s.auth);
-
-  const userOrders = orders.filter(o => o.userId === user?.id);
+  const { items: orders } = useAppSelector((s) => s.orders);
+  const userOrders = orders;
 
   return (
     <div className="pt-20 pb-20">
@@ -40,7 +38,7 @@ export default function OrdersPage() {
                       Placed {new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                     </p>
                   </div>
-                  <span className="font-bold text-white text-lg">${order.total.toFixed(2)}</span>
+                  <span className="font-bold text-white text-lg">${order.totalPrice.toFixed(2)}</span>
                 </div>
 
                 {/* Items preview */}
@@ -62,18 +60,16 @@ export default function OrdersPage() {
 
                 <div className="flex items-center justify-between">
                   <div className="text-xs text-zinc-500">
-                    <span className="text-zinc-400 font-medium">Ship to:</span>{' '}
-                    {order.shippingAddress.city}, {order.shippingAddress.state}
-                    {' · '}
-                    <span className="text-zinc-400 font-medium">Via:</span>{' '}
-                    {order.paymentMethod}
+                    <span className="font-medium text-zinc-400">Items:</span>{' '}
+                    {order.items.length}
                   </div>
 
                   {/* Order timeline */}
                   <div className="flex items-center gap-1">
                     {(['pending', 'processing', 'shipped', 'delivered'] as const).map((s, i) => {
+                      const normalizedStatus: string = order.status === 'completed' ? 'delivered' : order.status;
                       const statusOrder = ['pending', 'processing', 'shipped', 'delivered'];
-                      const currentIdx = statusOrder.indexOf(order.status);
+                      const currentIdx = statusOrder.indexOf(normalizedStatus as typeof statusOrder[number]);
                       const stepIdx = statusOrder.indexOf(s);
                       return (
                         <div

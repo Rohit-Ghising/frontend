@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CreditCard, Lock, CheckCircle, ChevronRight } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../hooks/useAppStore';
-import { clearCart } from '../store/cartSlice';
-import { addOrder } from '../store/ordersSlice';
+import { checkoutCart } from '../store/cartSlice';
+import { addOrder, normalizeOrder } from '../store/ordersSlice';
 import { Address } from '../types';
 import { toast } from 'sonner';
 
@@ -16,7 +16,7 @@ const paymentMethods = [
 export default function CheckoutPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { items } = useAppSelector(s => s.cart);
+  const { items, totalPrice } = useAppSelector((s) => s.cart);
   const { user } = useAppSelector(s => s.auth);
   const [step, setStep] = useState<'address' | 'payment' | 'success'>('address');
   const [payMethod, setPayMethod] = useState('card');
@@ -30,27 +30,23 @@ export default function CheckoutPage() {
     phone: '',
   });
 
-  const subtotal = items.reduce((acc, i) => acc + i.product.price * i.quantity, 0);
+  const subtotal = totalPrice;
   const shipping = subtotal > 99 ? 0 : 9.99;
   const tax = subtotal * 0.08;
   const total = subtotal + shipping + tax;
 
-  const handlePlaceOrder = () => {
-    const order = {
-      id: `ord-${Date.now()}`,
-      userId: user!.id,
-      items: [...items],
-      total,
-      status: 'pending' as const,
-      shippingAddress: address,
-      paymentMethod: payMethod === 'card' ? 'Visa •••• 4242' : payMethod,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    dispatch(addOrder(order));
-    dispatch(clearCart());
-    setStep('success');
-    toast.success('Order placed successfully!');
+  const handlePlaceOrder = async () => {
+    const result = await dispatch(checkoutCart());
+    if (checkoutCart.fulfilled.match(result)) {
+      const orderData = result.payload.order;
+      if (orderData) {
+        dispatch(addOrder(normalizeOrder(orderData)));
+      }
+      setStep('success');
+      toast.success(result.payload.message ?? 'Order placed successfully!');
+    } else {
+      toast.error(result.payload?.error || 'Checkout failed');
+    }
   };
 
   if (step === 'success') {
