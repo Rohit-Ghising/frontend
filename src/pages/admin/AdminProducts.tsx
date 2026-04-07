@@ -11,6 +11,7 @@ import apiClient from "../../lib/api";
 import { normalizeProduct } from "../../utils/products";
 import { toast } from "sonner";
 import { CATEGORY_META } from "../../constants/categoryMeta";
+import { formatUsdToNpr } from "../../utils/currency";
 
 const emptyProduct = (): Omit<Product, "id" | "createdAt"> => ({
   name: "",
@@ -284,11 +285,11 @@ export default function AdminProducts() {
                   </td>
                   <td className="px-4 py-3">
                     <span className="font-mono text-white">
-                      ${product.price.toLocaleString()}
+                      {formatUsdToNpr(product.price)}
                     </span>
                     {product.originalPrice && (
                       <span className="text-xs text-zinc-600 line-through ml-1">
-                        ${product.originalPrice}
+                        {formatUsdToNpr(product.originalPrice)}
                       </span>
                     )}
                   </td>

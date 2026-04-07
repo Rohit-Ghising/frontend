@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import apiClient from '../lib/api';
 import { normalizeCartPayload } from '../utils/cart';
-import type { CartState, CartItem, Product } from '../../types';
+import type { CartState, CartItem, EsewaPayload, PaymentRecord, Product } from '../types';
 import { logout } from './authSlice';
 import type { RootState } from '.';
 
@@ -9,6 +9,8 @@ interface CheckoutResponse {
   cart: any;
   order?: any;
   message?: string;
+  payment?: PaymentRecord | null;
+  esewa?: EsewaPayload | null;
 }
 
 const initialState: CartState = {
@@ -107,7 +109,7 @@ export const fetchCart = createAsyncThunk<ReturnType<typeof normalizeCartPayload
   'cart/fetchCart',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await apiClient.get('/cart/cart/');
+      const response = await apiClient.get('/api/cart/');
       return normalizeCartPayload(response.data);
     } catch (err: any) {
       return rejectWithValue(err.response?.data || { error: 'Unable to load cart' });
@@ -166,7 +168,7 @@ export const updateCartItem = createAsyncThunk<
     }
 
     try {
-      const response = await apiClient.put(`/cart/cart/update/${id}/`, { quantity });
+      const response = await apiClient.put(`/api/cart/update/${id}/`, { quantity });
       return normalizeCartPayload(response.data);
     } catch (err: any) {
       return rejectWithValue(err.response?.data || { error: 'Unable to update quantity' });
@@ -225,7 +227,7 @@ export const checkoutCart = createAsyncThunk<
   void,
   { rejectValue: any; state: RootState }
 >(
-  '/cart/checkoutCart',
+  '/api/cart/checkoutCart',
   async (_, { rejectWithValue, getState }) => {
     const state = getState();
     if (!state.auth.token) {
@@ -300,7 +302,8 @@ const cartSlice = createSlice({
             thunk.rejected.match(action),
           ),
         (state, action) => {
-          state.error = action.payload ? JSON.stringify(action.payload) : 'Cart operation failed';
+          const payload = 'payload' in action ? action.payload : undefined;
+          state.error = payload ? JSON.stringify(payload) : 'Cart operation failed';
         },
       );
   },

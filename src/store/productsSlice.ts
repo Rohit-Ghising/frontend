@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import apiClient from '../lib/api';
 import { normalizeProduct } from '../utils/products';
-import type { Product, FilterState, Category } from '../../types';
+import type { Product, FilterState, Category } from '../types';
 
 const initialFilters: FilterState = {
   category: 'all',

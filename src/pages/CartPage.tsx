@@ -3,6 +3,7 @@ import { Trash2, Plus, Minus, ShoppingCart, ArrowRight, Tag } from 'lucide-react
 import { useAppDispatch, useAppSelector } from '../hooks/useAppStore';
 import { removeCartItem, updateCartItem, clearCart } from '../store/cartSlice';
 import { toast } from 'sonner';
+import { formatUsdToNpr } from '../utils/currency';
 
 export default function CartPage() {
   const dispatch = useAppDispatch();
@@ -124,9 +125,9 @@ export default function CartPage() {
                     </div>
 
                     <div className="text-right">
-                      <p className="font-bold text-white">${(product.price * quantity).toLocaleString()}</p>
+                      <p className="font-bold text-white">{formatUsdToNpr(product.price * quantity)}</p>
                       {quantity > 1 && (
-                        <p className="text-xs text-zinc-600">${product.price.toLocaleString()} each</p>
+                        <p className="text-xs text-zinc-600">{formatUsdToNpr(product.price)} each</p>
                       )}
                     </div>
                   </div>
@@ -155,12 +156,12 @@ export default function CartPage() {
               <div className="space-y-2.5 text-sm">
                 <div className="flex justify-between">
                   <span className="text-zinc-400">Subtotal ({totalItems} items)</span>
-                  <span className="text-white">${subtotal.toFixed(2)}</span>
+                  <span className="text-white">{formatUsdToNpr(subtotal)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-zinc-400">Shipping</span>
                   <span className={shipping === 0 ? 'text-green-400' : 'text-white'}>
-                    {shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}
+                    {shipping === 0 ? 'FREE' : formatUsdToNpr(shipping)}
                   </span>
                 </div>
                 {shipping === 0 && (
@@ -168,11 +169,11 @@ export default function CartPage() {
                 )}
                 <div className="flex justify-between">
                   <span className="text-zinc-400">Tax (8%)</span>
-                  <span className="text-white">${tax.toFixed(2)}</span>
+                  <span className="text-white">{formatUsdToNpr(tax)}</span>
                 </div>
                 <div className="flex justify-between pt-3 border-t border-surface-border">
                   <span className="font-semibold text-white">Total</span>
-                  <span className="font-bold text-xl text-white">${total.toFixed(2)}</span>
+                  <span className="font-bold text-xl text-white">{formatUsdToNpr(total)}</span>
                 </div>
               </div>
 

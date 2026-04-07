@@ -31,7 +31,7 @@ export default function AdminLayout() {
               <Zap size={16} className="text-white" />
             </div>
             <div>
-              <p className="font-display font-bold text-white text-sm">TechCart</p>
+              <p className="font-display font-bold text-white text-sm">GadgetZone</p>
               <p className="text-xs text-zinc-500">Admin Panel</p>
             </div>
           </div>

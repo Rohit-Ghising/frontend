@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Package, ChevronRight, ShoppingBag } from 'lucide-react';
 import { useAppSelector } from '../hooks/useAppStore';
 import OrderStatusBadge from '../components/ui/OrderStatusBadge';
+import { formatUsdToNpr } from '../utils/currency';
 
 export default function OrdersPage() {
   const { items: orders } = useAppSelector((s) => s.orders);
@@ -38,7 +39,7 @@ export default function OrdersPage() {
                       Placed {new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                     </p>
                   </div>
-                  <span className="font-bold text-white text-lg">${order.totalPrice.toFixed(2)}</span>
+                  <span className="font-bold text-white text-lg">{formatUsdToNpr(order.totalPrice)}</span>
                 </div>
 
                 {/* Items preview */}

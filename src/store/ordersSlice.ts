@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import apiClient from '../lib/api';
 import { normalizeProduct } from '../utils/products';
-import type { Order, OrderStatus, CartItem } from '../../types';
+import type { Order, OrderStatus, CartItem } from '../types';
 import { logout } from './authSlice';
 
 const normalizeOrderItem = (item: any): CartItem | null => {
@@ -26,7 +26,9 @@ export const normalizeOrder = (raw: any): Order => ({
   createdAt: raw.created_at,
   updatedAt: raw.updated_at,
   items: Array.isArray(raw.items)
-    ? raw.items.map(normalizeOrderItem).filter((item): item is CartItem => Boolean(item))
+    ? raw.items
+        .map(normalizeOrderItem)
+        .filter((item: CartItem | null): item is CartItem => Boolean(item))
     : [],
 });
 

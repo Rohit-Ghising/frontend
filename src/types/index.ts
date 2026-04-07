@@ -56,6 +56,36 @@ export interface Order {
   updatedAt?: string;
 }
 
+export type PaymentStatus = 'pending' | 'success' | 'failed';
+
+export interface PaymentRecord {
+  id: number;
+  method: string;
+  transaction_uuid: string;
+  amount: string;
+  tax_amount: string;
+  shipping_amount: string;
+  total_amount: string;
+  status: PaymentStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface EsewaPayload {
+  payment_url: string;
+  product_code: string;
+  amount: string;
+  tax_amount: string;
+  total_amount: string;
+  transaction_uuid: string;
+  product_service_charge: string;
+  product_delivery_charge: string;
+  success_url: string;
+  failure_url: string;
+  signed_field_names?: string;
+  signature?: string;
+}
+
 export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'completed';
 
 export interface Address {

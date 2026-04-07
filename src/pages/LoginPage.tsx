@@ -1,82 +1,97 @@
-import { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Eye, EyeOff, Zap, LogIn } from "lucide-react";
-import { useAppDispatch, useAppSelector } from "../hooks/useAppStore";
-
-import { toast } from "sonner";
-import { loginUser } from "../store/authSlice";
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Eye, EyeOff, LogIn, Zap } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '../hooks/useAppStore';
+import { toast } from 'sonner';
+import { loginUser } from '../store/authSlice';
 
 export default function LoginPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-
   const { loading, error } = useAppSelector((s) => s.auth);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLogin = async (event: React.FormEvent) => {
+    event.preventDefault();
+
     try {
-      // Dispatch the thunk with email & password
       const resultAction = await dispatch(loginUser({ email, password }));
 
-      // Check if login succeeded or failed
       if (loginUser.fulfilled.match(resultAction)) {
-        console.log("Login successful:", resultAction.payload);
-        // Redirect or do something after login
-        navigate("/");
+        navigate('/');
       } else {
-        console.log("Login failed:", resultAction.payload);
-        toast.error(resultAction.payload?.error || "Login failed");
+        toast.error(resultAction.payload?.error || 'Login failed');
       }
     } catch (err) {
-      console.log("Unexpected error:", err);
+      toast.error('Unexpected error while signing in');
+      console.error(err);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#0f0f11] flex items-center justify-center p-4">
-      {/* Background */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-brand-500/5 rounded-full blur-3xl" />
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-12">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-[-8rem] top-[-6rem] h-[22rem] w-[22rem] rounded-full bg-brand-500/12 blur-3xl" />
+        <div className="absolute right-[-4rem] top-[18%] h-[18rem] w-[18rem] rounded-full bg-accent/12 blur-3xl" />
+      </div>
 
-      <div className="w-full max-w-md relative z-10">
-        {/* Logo */}
-        <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-          <div className="w-9 h-9 rounded-xl bg-brand-500 flex items-center justify-center">
-            <Zap size={18} className="text-white" />
+      <div className="relative z-10 grid w-full max-w-5xl gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+        <div className="hidden lg:block">
+          <p className="section-label mb-5">Welcome back</p>
+          <h1 className="font-display text-5xl font-bold leading-tight text-white">
+            Sign in and continue your next upgrade.
+          </h1>
+          <p className="mt-5 max-w-lg text-base leading-8 text-slate-400">
+            GadgetZone now has a cleaner visual system, stronger hierarchy, and more focused interactions throughout the storefront. Your account keeps orders, checkout, and product browsing connected.
+          </p>
+
+          <div className="mt-8 grid max-w-lg gap-4 sm:grid-cols-2">
+            {[
+              { title: 'Cleaner browsing', text: 'Sharper layout, stronger cards, clearer product discovery.' },
+              { title: 'Faster decisions', text: 'Improved hierarchy keeps pricing and actions easy to scan.' },
+            ].map(({ title, text }) => (
+              <div key={title} className="surface-panel-soft p-5">
+                <p className="font-display text-xl font-semibold text-white">{title}</p>
+                <p className="mt-3 text-sm leading-7 text-slate-400">{text}</p>
+              </div>
+            ))}
           </div>
-          <span className="font-display font-bold text-white text-xl">
-            Tech<span className="text-brand-400">Cart</span>
-          </span>
-        </Link>
+        </div>
 
-        <div className="card p-8">
-          <div className="text-center mb-8">
-            <h1 className="font-display font-bold text-2xl text-white mb-2">
-              Welcome back
-            </h1>
-            <p className="text-zinc-500 text-sm">
-              Sign in to your account to continue
+        <div className="surface-panel mx-auto w-full max-w-md p-8 sm:p-9">
+          <Link to="/" className="mb-8 flex items-center justify-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 shadow-lg shadow-brand-500/20">
+              <Zap size={18} className="text-white" />
+            </div>
+            <span className="font-display text-2xl font-bold text-white">
+              Gadget<span className="text-brand-300">Zone</span>
+            </span>
+          </Link>
+
+          <div className="text-center">
+            <h2 className="font-display text-3xl font-bold text-white">Sign in</h2>
+            <p className="mt-3 text-sm leading-7 text-slate-400">
+              Access your orders, checkout flow, and saved shopping progress.
             </p>
           </div>
 
-          {/* Demo hint */}
-          <div className="bg-brand-500/5 border border-brand-500/20 rounded-xl p-3 mb-6 text-xs text-zinc-400 space-y-1">
-            <p className="font-medium text-brand-400">Demo Credentials:</p>
-            <p>User: john@example.com / any6+charpass</p>
-            <p>Admin: admin@techcart.com / any6+charpass</p>
+          <div className="mt-6 rounded-[1.25rem] border border-brand-400/20 bg-brand-400/8 p-4 text-xs text-slate-300">
+            <p className="font-semibold text-brand-200">Demo credentials</p>
+            <p className="mt-2">User: john@example.com / any6+charpass</p>
+            <p className="mt-1">Admin demo: admin@techcart.com / any6+charpass</p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} className="mt-6 space-y-4">
             <div>
-              <label className="text-xs text-zinc-500 font-medium mb-1.5 block">
-                Email Address
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                Email address
               </label>
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(event) => setEmail(event.target.value)}
                 placeholder="you@example.com"
                 className="input"
                 required
@@ -84,42 +99,38 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="text-xs text-zinc-500 font-medium mb-1.5 block">
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
                 Password
               </label>
               <div className="relative">
                 <input
-                  type={showPass ? "text" : "password"}
+                  type={showPass ? 'text' : 'password'}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="input pr-10"
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder="Enter your password"
+                  className="input pr-11"
                   required
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPass(!showPass)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
+                  onClick={() => setShowPass((value) => !value)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 transition-colors hover:text-white"
                 >
-                  {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
+                  {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
 
             {error && (
-              <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl px-4 py-3">
+              <div className="rounded-[1rem] border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
                 {error}
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary w-full py-3 text-base"
-            >
+            <button type="submit" disabled={loading} className="btn-primary w-full py-3 text-base">
               {loading ? (
                 <span className="flex items-center gap-2">
-                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                   Signing in...
                 </span>
               ) : (
@@ -130,12 +141,9 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="text-center text-sm text-zinc-500 mt-6">
-            Don't have an account?{" "}
-            <Link
-              to="/signup"
-              className="text-brand-400 hover:text-brand-300 font-medium transition-colors"
-            >
+          <p className="mt-6 text-center text-sm text-slate-500">
+            Don&apos;t have an account?{' '}
+            <Link to="/signup" className="font-medium text-brand-200 transition-colors hover:text-white">
               Sign up
             </Link>
           </p>

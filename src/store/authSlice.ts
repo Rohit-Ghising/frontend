@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import apiClient, { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../lib/api';
-import type { AuthState, User } from '../../types';
+import type { AuthState, User } from '../types';
 
 type AuthResponse = {
   user: User;

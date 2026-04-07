@@ -1,80 +1,130 @@
-import { Link } from 'react-router-dom';
-import { Zap, Twitter, Github, Instagram, Mail } from 'lucide-react';
+ï»¿import { Link } from 'react-router-dom';
+import { ArrowRight, Mail, MapPin, Phone, Shield, Zap } from 'lucide-react';
 
 export default function Footer() {
+  const year = new Date().getFullYear();
+
+  const shopLinks = [
+    { label: 'All Products', to: '/products' },
+    { label: 'Phones', to: '/products?category=phones' },
+    { label: 'Laptops', to: '/products?category=laptops' },
+    { label: 'Headphones', to: '/products?category=headphones' },
+  ];
+
+  const accountLinks = [
+    { label: 'Sign In', to: '/login' },
+    { label: 'My Orders', to: '/orders' },
+    { label: 'Cart', to: '/cart' },
+    { label: 'Checkout', to: '/checkout' },
+  ];
+
   return (
-    <footer className="border-t border-surface-border bg-surface-card/30 mt-20">
-      <div className="page-container py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="md:col-span-1">
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center">
-                <Zap size={16} className="text-white" />
+    <footer className="relative mt-24 border-t border-white/10 bg-[#030712]/70">
+      <div className="page-container pb-10 pt-0">
+        <div className="surface-panel relative -mt-14 mb-12 overflow-hidden px-6 py-8 sm:px-8 lg:px-10 lg:py-10">
+          <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.14),transparent_60%)] lg:block" />
+          <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-2xl">
+              <p className="section-label mb-4">
+                <Shield size={14} /> Buy with confidence
+              </p>
+              <h2 className="font-display text-3xl font-bold text-white sm:text-4xl">
+                Premium gadgets, clearer choices, and support that actually responds.
+              </h2>
+              <p className="mt-3 max-w-xl text-sm leading-7 text-slate-400 sm:text-base">
+                GadgetZone combines editorial curation, fast checkout, and reliable post-purchase help so shopping feels sharp from first click to delivery.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Link to="/products" className="btn-primary">
+                Explore catalog <ArrowRight size={16} />
+              </Link>
+              <Link to="/orders" className="btn-secondary">
+                Track your orders
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-10 lg:grid-cols-[1.1fr_0.75fr_0.75fr_0.9fr]">
+          <div>
+            <Link to="/" className="mb-5 flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 shadow-lg shadow-brand-500/20">
+                <Zap size={18} className="text-white" />
               </div>
-            <span className="font-display font-bold text-white text-lg">
-              Tech<span className="text-brand-400">Cart</span>
-            </span>
+              <div>
+                <p className="font-display text-lg font-bold text-white">
+                  Gadget<span className="text-brand-300">Zone</span>
+                </p>
+                <p className="text-xs uppercase tracking-[0.22em] text-slate-500">
+                  Curated tech storefront
+                </p>
+              </div>
             </Link>
-            <p className="text-sm text-zinc-500 leading-relaxed">
-              Your destination for the latest and greatest in technology. Premium gadgets, unbeatable prices.
+
+            <p className="max-w-sm text-sm leading-7 text-slate-400">
+              Curated launches, trusted brands, and a cleaner shopping flow built for people who want premium tech without the clutter.
             </p>
-            <div className="flex items-center gap-3 mt-4">
-              {[Twitter, Github, Instagram, Mail].map((Icon, i) => (
-                <button key={i} className="p-2 rounded-lg text-zinc-500 hover:text-white hover:bg-surface-hover transition-all">
-                  <Icon size={15} />
-                </button>
+
+            <div className="mt-6 grid grid-cols-3 gap-3">
+              {[
+                { value: '24h', label: 'Priority support' },
+                { value: '2-3d', label: 'Fast delivery' },
+                { value: '4.9', label: 'Average rating' },
+              ].map(({ value, label }) => (
+                <div key={label} className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
+                  <p className="font-display text-lg font-bold text-white">{value}</p>
+                  <p className="mt-1 text-xs text-slate-500">{label}</p>
+                </div>
               ))}
             </div>
           </div>
 
-          {[
-            {
-              title: 'Shop',
-              links: [
-                { label: 'All Products', to: '/products' },
-                { label: 'Phones', to: '/products?category=phones' },
-                { label: 'Laptops', to: '/products?category=laptops' },
-                { label: 'Headphones', to: '/products?category=headphones' },
-                { label: 'Smart Watches', to: '/products?category=smartwatches' },
-              ],
-            },
-            {
-              title: 'Account',
-              links: [
-                { label: 'My Account', to: '/login' },
-                { label: 'Orders', to: '/orders' },
-                { label: 'Cart', to: '/cart' },
-                { label: 'Wishlist', to: '#' },
-              ],
-            },
-            {
-              title: 'Support',
-              links: [
-                { label: 'Help Center', to: '#' },
-                { label: 'Track Order', to: '#' },
-                { label: 'Return Policy', to: '#' },
-                { label: 'Privacy Policy', to: '#' },
-              ],
-            },
-          ].map(({ title, links }) => (
-            <div key={title}>
-              <h4 className="font-display font-semibold text-white text-sm mb-4">{title}</h4>
-              <ul className="space-y-2.5">
-                {links.map(({ label, to }) => (
-                  <li key={label}>
-                    <Link to={to} className="text-sm text-zinc-500 hover:text-white transition-colors">
-                      {label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+          <div>
+            <h4 className="font-display text-sm font-semibold text-white">Shop</h4>
+            <div className="mt-4 space-y-3">
+              {shopLinks.map(({ label, to }) => (
+                <Link key={label} to={to} className="block text-sm text-slate-400 transition-colors hover:text-white">
+                  {label}
+                </Link>
+              ))}
             </div>
-          ))}
+          </div>
+
+          <div>
+            <h4 className="font-display text-sm font-semibold text-white">Account</h4>
+            <div className="mt-4 space-y-3">
+              {accountLinks.map(({ label, to }) => (
+                <Link key={label} to={to} className="block text-sm text-slate-400 transition-colors hover:text-white">
+                  {label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-display text-sm font-semibold text-white">Support</h4>
+            <div className="mt-4 space-y-3 text-sm text-slate-400">
+              <a href="mailto:support@gadgetzone.store" className="flex items-start gap-3 transition-colors hover:text-white">
+                <Mail size={16} className="mt-0.5 text-brand-300" />
+                <span>support@gadgetzone.store</span>
+              </a>
+              <div className="flex items-start gap-3">
+                <Phone size={16} className="mt-0.5 text-brand-300" />
+                <span>Available daily for order and delivery help</span>
+              </div>
+              <div className="flex items-start gap-3">
+                <MapPin size={16} className="mt-0.5 text-brand-300" />
+                <span>Kathmandu dispatch hub with nationwide delivery coverage</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="border-t border-surface-border mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-zinc-600">© 2025 TechCart. All rights reserved.</p>
-          <p className="text-xs text-zinc-600 font-mono">v1.0.0</p>
+        <div className="mt-10 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+          <p>{year} GadgetZone. Premium gadgets with a cleaner shopping experience.</p>
+          <p className="font-mono">v1.0.0</p>
         </div>
       </div>
     </footer>

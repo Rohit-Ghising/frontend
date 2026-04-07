@@ -5,6 +5,7 @@ import { fetchOrders, updateOrderStatus } from '../../store/ordersSlice';
 import { OrderStatus } from '../../types';
 import OrderStatusBadge from '../../components/ui/OrderStatusBadge';
 import { toast } from 'sonner';
+import { formatUsdToNpr } from '../../utils/currency';
 
 const ALL_STATUSES: OrderStatus[] = ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'completed'];
 
@@ -112,7 +113,7 @@ export default function AdminOrders() {
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="font-mono font-bold text-white">${order.totalPrice.toFixed(2)}</span>
+                  <span className="font-mono font-bold text-white">{formatUsdToNpr(order.totalPrice)}</span>
                     </td>
                     <td className="px-4 py-3">
                       <OrderStatusBadge status={order.status} />
@@ -149,7 +150,7 @@ export default function AdminOrders() {
                                   <img src={product.images[0]} alt={product.name} className="w-8 h-8 rounded-md object-cover" />
                                   <span className="text-zinc-300 flex-1 line-clamp-1">{product.name}</span>
                                   <span className="text-zinc-500">×{quantity}</span>
-                                  <span className="text-white font-mono">${(product.price * quantity).toFixed(0)}</span>
+                                  <span className="text-white font-mono">{formatUsdToNpr(product.price * quantity)}</span>
                                 </div>
                               ))}
                             </div>

@@ -9,7 +9,9 @@ export const normalizeCartItem = (raw: any): CartItem => ({
 });
 
 export const normalizeCartPayload = (payload: any) => {
-  const items = Array.isArray(payload?.items) ? payload.items.map(normalizeCartItem) : [];
+  const items: CartItem[] = Array.isArray(payload?.items)
+    ? payload.items.map(normalizeCartItem)
+    : [];
   return {
     id: payload?.id,
     items,
