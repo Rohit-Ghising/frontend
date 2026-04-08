@@ -1,18 +1,24 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { X, ShoppingCart, Trash2, Plus, Minus, ArrowRight } from 'lucide-react';
-import { useAppDispatch, useAppSelector } from '../../hooks/useAppStore';
-import { closeCart, removeCartItem, updateCartItem } from '../../store/cartSlice';
+import { Link, useNavigate } from "react-router-dom";
+import { X, ShoppingCart, Trash2, Plus, Minus, ArrowRight } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "../../hooks/useAppStore";
+import {
+  closeCart,
+  removeCartItem,
+  updateCartItem,
+} from "../../store/cartSlice";
 
 export default function CartDrawer() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { items, isOpen, totalItems, totalPrice } = useAppSelector((s) => s.cart);
+  const { items, isOpen, totalItems, totalPrice } = useAppSelector(
+    (s) => s.cart,
+  );
   const count = totalItems;
   const total = totalPrice;
 
   const handleCheckout = () => {
     dispatch(closeCart());
-    navigate('/checkout');
+    navigate("/checkout");
   };
 
   return (
@@ -26,16 +32,20 @@ export default function CartDrawer() {
       )}
 
       {/* Drawer */}
-      <div className={`fixed top-0 right-0 h-full w-full max-w-md z-50 flex flex-col bg-surface-card border-l border-surface-border transition-transform duration-300 ease-in-out ${
-        isOpen ? 'translate-x-0' : 'translate-x-full'
-      }`}>
+      <div
+        className={`fixed top-0 right-0 h-full w-full max-w-md z-50 flex flex-col bg-surface-card border-l border-surface-border transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-surface-border">
           <div className="flex items-center gap-2">
             <ShoppingCart size={18} className="text-brand-400" />
             <h2 className="font-display font-semibold text-white">Cart</h2>
             {count > 0 && (
-              <span className="badge bg-brand-500/20 text-brand-400 border border-brand-500/30">{count}</span>
+              <span className="badge bg-brand-500/20 text-brand-400 border border-brand-500/30">
+                {count}
+              </span>
             )}
           </div>
           <button
@@ -55,9 +65,15 @@ export default function CartDrawer() {
               </div>
               <div>
                 <p className="font-medium text-white">Your cart is empty</p>
-                <p className="text-sm text-zinc-500 mt-1">Add some gadgets to get started</p>
+                <p className="text-sm text-zinc-500 mt-1">
+                  Add some gadget to get started
+                </p>
               </div>
-              <Link to="/products" onClick={() => dispatch(closeCart())} className="btn-primary">
+              <Link
+                to="/products"
+                onClick={() => dispatch(closeCart())}
+                className="btn-primary"
+              >
                 Browse Products
               </Link>
             </div>
@@ -65,7 +81,10 @@ export default function CartDrawer() {
             items.map((item) => {
               const { product, quantity } = item;
               return (
-                <div key={product.id} className="flex gap-3 p-3 rounded-xl bg-surface-hover border border-surface-border">
+                <div
+                  key={product.id}
+                  className="flex gap-3 p-3 rounded-xl bg-surface-hover border border-surface-border"
+                >
                   <img
                     src={product.images[0]}
                     alt={product.name}
@@ -79,30 +98,50 @@ export default function CartDrawer() {
                     >
                       {product.name}
                     </Link>
-                    <p className="text-xs text-zinc-500 mt-0.5">{product.brand}</p>
+                    <p className="text-xs text-zinc-500 mt-0.5">
+                      {product.brand}
+                    </p>
                     <div className="flex items-center justify-between mt-2">
-                      <span className="text-sm font-bold text-brand-400">${(product.price * quantity).toLocaleString()}</span>
+                      <span className="text-sm font-bold text-brand-400">
+                        ${(product.price * quantity).toLocaleString()}
+                      </span>
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => {
                             if (quantity > 1) {
-                              dispatch(updateCartItem({ id: item.id, quantity: quantity - 1 }));
+                              dispatch(
+                                updateCartItem({
+                                  id: item.id,
+                                  quantity: quantity - 1,
+                                }),
+                              );
                             }
                           }}
                           className="w-6 h-6 rounded-md bg-surface-card border border-surface-border flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
                         >
                           <Minus size={11} />
                         </button>
-                        <span className="w-6 text-center text-sm font-mono text-white">{quantity}</span>
+                        <span className="w-6 text-center text-sm font-mono text-white">
+                          {quantity}
+                        </span>
                         <button
-                          onClick={() => dispatch(updateCartItem({ id: item.id, quantity: quantity + 1 }))}
+                          onClick={() =>
+                            dispatch(
+                              updateCartItem({
+                                id: item.id,
+                                quantity: quantity + 1,
+                              }),
+                            )
+                          }
                           className="w-6 h-6 rounded-md bg-surface-card border border-surface-border flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
                         >
                           <Plus size={11} />
                         </button>
                         <button
                           onClick={async () => {
-                            const result = await dispatch(removeCartItem(item.id));
+                            const result = await dispatch(
+                              removeCartItem(item.id),
+                            );
                             if (removeCartItem.fulfilled.match(result)) {
                               // optional feedback could go here
                             }
@@ -125,9 +164,13 @@ export default function CartDrawer() {
           <div className="p-5 border-t border-surface-border space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-zinc-400 text-sm">Subtotal</span>
-              <span className="font-bold text-white text-lg">${total.toLocaleString()}</span>
+              <span className="font-bold text-white text-lg">
+                ${total.toLocaleString()}
+              </span>
             </div>
-            <p className="text-xs text-zinc-600">Shipping calculated at checkout</p>
+            <p className="text-xs text-zinc-600">
+              Shipping calculated at checkout
+            </p>
             <button onClick={handleCheckout} className="btn-primary w-full">
               Checkout <ArrowRight size={15} />
             </button>
